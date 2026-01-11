@@ -6,7 +6,8 @@ import string
 import matplotlib.pyplot as plt
 from nltk.tokenize import word_tokenize, sent_tokenize
 from nltk.stem import PorterStemmer, LancasterStemmer
-from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.feature_extraction.text import CountVectorizer,TfidfVectorizer
+
 
 # Download required NLTK data
 nltk.download('punkt')
@@ -153,3 +154,6 @@ if st.button("Process Text"):
         ax.axis("equal")
 
         st.pyplot(fig)
+
+        
+        
