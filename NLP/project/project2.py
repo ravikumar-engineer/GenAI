@@ -1,125 +1,130 @@
 import streamlit as st
 import re
-import pandas as pd
-from sklearn.feature_extraction.text import TfidfVectorizer
-from nltk.tokenize import word_tokenize
 import spacy
 from gensim.models import Word2Vec
+from nltk.tokenize import sent_tokenize, word_tokenize
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
 
-# Load SpaCy model
+from sklearn.feature_extraction.text import TfidfVectorizer
+
+# Load SpaCy Model
 nlp = spacy.load("en_core_web_sm")
 
-# Page config
-st.set_page_config(
-    page_title="NLP Feature Extraction using Regex",
-    layout="wide"
-)
+st.set_page_config(page_title="NLP Feature Extraction", layout="wide")
 
 st.title("NLP Feature Extraction App")
-st.write("Tokenization | Text Cleaning | TF-IDF | Word2Vec")
+st.write("TF-IDF and Word Embeddings using Regex-based Cleaning")
 
-# Text input
+#USER INPUT 
 text = st.text_area(
-    "Enter text for NLP preprocessing",
+    "Enter text",
     height=150,
-    placeholder="Example:\nRavi is the HOD of HIT.\nHe loves NLP."
+    placeholder="Example: NLP is amazing! It helps machines understand language."
 )
 
-# Sidebar options
 option = st.sidebar.radio(
-    "Select NLP Technique",
-    ["Tokenization", "Text cleaning", "TF-IDF", "Word2Vec"]
+    "Select Feature Extraction Technique",
+    ["TF-IDF", "Word Embeddings", "Word2Vec"]
 )
 
-# Process button
+#REGEX CLEANING FUNCTION
+def regex_clean(text):
+    text = text.lower()
+    text = re.sub(r"http\S+|www\S+", "", text)  #remove url
+    text = re.sub(r"\b[\w\.-]+@[\w\.-]+\.\w+\b", "", text) #remove email
+    text = re.sub(r"[^a-zA-Z\s]", "", text)  #remove non-alphabet
+    text = re.sub(r"\s+", " ", text).strip()  #remove extra space
+
+    # SpaCy stopwords removal
+    doc = nlp(text)
+    tokens = [token.text for token in doc if not token.is_stop]
+
+    return " ".join(tokens)
+
+
+#PROCESS BUTTON
 if st.button("Process Text"):
-
     if text.strip() == "":
-        st.warning("Please enter some text")
+        st.warning("Please enter some text.")
+    
+    else:
+        cleaned_text = regex_clean(text)
 
-    # ---------------- TOKENIZATION ----------------
-    elif option == "Tokenization":
-        st.subheader("Tokenization Output")
-        words = word_tokenize(text)
-        st.write(words)
+        st.markdown("### 🔹 Cleaned Text (Regex) :")
+        st.write(cleaned_text)
 
-    # ---------------- TEXT CLEANING ----------------
-    elif option == "Text cleaning":
-        st.subheader("Text Cleaning Output")
+        #TF-IDF
+        if option == "TF-IDF":
+            st.subheader("TF-IDF Output")
 
-        text_lower = text.lower()
-        text_no_emails = re.sub(
-             r'\b[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}\b',
-             '',
-             text_lower
-        )
+            vectorizer = TfidfVectorizer()
+            X = vectorizer.fit_transform([cleaned_text])
 
-       # 3. Remove URLs
-        text_no_urls = re.sub(
-            r'(https?://\S+|www\.\S+)',
-            '',
-            text_no_emails
-        )
-        
-        text_no_digits = re.sub(r'\d+', '', text_no_urls)
-        text_no_punct = re.sub(r'[^\w\s]', '', text_no_digits)
-        cleaned_text = re.sub(r'\s+', ' ', text_no_punct).strip()
-
-        # Stopword removal using SpaCy
-        doc = nlp(cleaned_text)
-        final_words = [token.text for token in doc if not token.is_stop]
-
-        st.markdown("### Original Text")
-        st.write(text)
-
-        st.markdown("### Cleaned Text")
-        st.write(" ".join(final_words))
-
-    # ---------------- TF-IDF ----------------
-    elif option == "TF-IDF":
-        st.subheader("TF-IDF Output")
-
-        vectorizer = TfidfVectorizer(
-            lowercase=True,
-            stop_words='english'
-        )
-        X = vectorizer.fit_transform([text])
-
-        df = pd.DataFrame(
+            df = pd.DataFrame(
             X.toarray(),
             columns=vectorizer.get_feature_names_out()
-        )
+            )
 
-        st.dataframe(df, use_container_width=True)
+            st.dataframe(df, use_container_width=True)
 
-    # ---------------- WORD2VEC ----------------
-    elif option == "Word2Vec":
-        st.subheader("Word2Vec Output")
 
-        texts = [line for line in text.split("\n") if line.strip() != ""]
+            # Bar chart (Top words)
+            tfidf_scores = df.iloc[0].sort_values(ascending=False)[:10]
 
-        if len(texts) < 2:
-            st.warning("Please enter at least 2 sentences (one per line)")
-        else:
-            tokenized_sentences = [
-                word_tokenize(sentence.lower())
-                for sentence in texts
-            ]
+            fig, ax = plt.subplots()
+            tfidf_scores.plot(kind="bar", ax=ax)
+            ax.set_title("Top TF-IDF Words")
+            st.pyplot(fig)
 
-            model = Word2Vec(
+        #WORD EMBEDDINGS
+        elif option == "Word Embeddings":
+            st.subheader("Word Embeddings Output")
+            doc = nlp(cleaned_text)
+            data = []
+            for token in doc:
+                if token.has_vector:
+                    data.append({
+                        "Word": token.text,
+                        "Vector Size": token.vector.shape[0],
+                        "Vector (first 5 values)": token.vector[:5]
+                        })
+            df = pd.DataFrame(data)
+            st.dataframe(df, use_container_width=True)
+
+
+        #WORD2VEC
+        elif option == "Word2Vec":
+            st.subheader("Word2Vec Embeddings")
+            cleaned_text = regex_clean(text)
+            # Sentence → Word tokenization
+            sentences = sent_tokenize(cleaned_text)
+            tokenized_sentences = [word_tokenize(sent) for sent in sentences]
+
+            if len(tokenized_sentences) == 0:
+                st.warning("Not enough data to train Word2Vec")
+            else:
+            # Train Word2Vec model
+                model = Word2Vec(
                 sentences=tokenized_sentences,
-                vector_size=10,
+                vector_size=100,
                 window=5,
                 min_count=1,
-                workers=4
-            )
+                workers=4,
+                sg=1   # SkipGram
+                )
 
-            vocab = list(model.wv.index_to_key)
+            # Collect vectors
+                data = []
+                for word in model.wv.index_to_key:
+                    data.append({
+                        "Word": word,
+                        "Vector Size": model.wv[word].shape[0],
+                        "Vector (first 5 values)": model.wv[word][:5]
+                    })
 
-            word_vectors = pd.DataFrame(
-                [model.wv[word] for word in vocab],
-                index=vocab
-            )
+                df = pd.DataFrame(data)
+                st.dataframe(df, use_container_width=True)
 
-            st.markdown("### Word Embeddings (Word Vectors)")
-            st.dataframe(word_vectors, use_container_width=True)
+                st.info("Word2Vec trained on input text using SkipGram")
