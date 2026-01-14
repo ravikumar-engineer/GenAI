@@ -1,136 +1,148 @@
-🎬 IMDB Movie Review Sentiment Analysis using Simple RNN
+🎬 IMDB Movie Review Sentiment Analysis using Artificial Neural Network (ANN / RNN)
+📖 Project Overview
 
-This project demonstrates binary sentiment classification (Positive / Negative) on the IMDB movie reviews dataset using a Simple Recurrent Neural Network (RNN) built with TensorFlow & Keras.
+Sentiment analysis plays a crucial role in understanding public opinion from textual data such as movie reviews, social media posts, and product feedback.
 
-📌 Project Overview
+This project focuses on predicting whether a movie review is positive or negative using an Artificial Neural Network (Simple RNN) trained on the IMDB Movie Reviews dataset.
 
-Dataset: IMDB Movie Reviews (built-in Keras dataset)
+The project demonstrates how deep learning models can be used for Natural Language Processing (NLP) tasks.
 
-Task: Sentiment Analysis (Positive / Negative)
+The project is divided into three major parts:
+1.⁠ ⁠Data Preparation & Preprocessing
+2.⁠ ⁠Sentiment Classification using Neural Network
+3.⁠ ⁠Model Evaluation & Prediction
 
-Model Used: Simple RNN
+This solution helps analyze customer opinions and automate sentiment classification effectively.
 
-Framework: TensorFlow (Keras API)
+🧠 Problem Statement
 
-Evaluation Metric: Accuracy
+To build a deep learning model that classifies movie reviews as Positive or Negative based on the textual content of the review.
 
-Output: Trained model + sentiment prediction
+The model learns from:
 
-📂 Dataset Details
+Word sequences
 
-Total reviews: 50,000
+Review length
 
-Training samples: 40,000
+Vocabulary frequency
 
-Testing samples: 10,000
+Contextual word order
 
-Each review is encoded as a sequence of integers
+🏗️ Project Structure
+IMDB-Sentiment-Analysis/
+│
+├── data/
+│   └── imdb_dataset (loaded via Keras)
+│
+├── model/
+│   └── simple_rnn_imdb.h5
+│
+├── notebooks/
+│   └── imdb_sentiment_training.ipynb
+│
+├── imdb_rnn.py
+├── requirements.txt
+└── README.md
 
-Vocabulary size limited to 1,000 most frequent words
+⚙️ Part 1: Data Preparation & Preprocessing
 
-Reviews are padded to a maximum length of 200 words
+•⁠ ⁠Loading IMDB dataset from Keras
+•⁠ ⁠Limiting vocabulary size to top 1000 frequent words
+•⁠ ⁠Padding review sequences to fixed length (200 words)
+•⁠ ⁠Splitting data into training and testing sets
 
-🧠 Model Architecture
-Embedding Layer (1000 → 128)
-        ↓
-SimpleRNN (128 units, tanh activation)
-        ↓
-Dense Layer (1 unit, sigmoid activation)
+🧠 Part 2: Sentiment Classification using Neural Network
 
-Why Simple RNN?
+•⁠ ⁠Building a Simple RNN-based Neural Network
+•⁠ ⁠Model Architecture:
 
-Suitable for sequential data
+Embedding Layer
 
-Learns word order and temporal dependencies
+Simple RNN Layer
 
-Simple to understand for beginners
+Dense Output Layer (Binary Classification)
+•⁠ ⁠Activation Functions:
 
-⚙️ Installation & Requirements
+tanh for RNN
 
-Make sure you have Python 3.8+ installed.
+sigmoid for output
+•⁠ ⁠Loss Function: Binary Crossentropy
+•⁠ ⁠Optimizer: Adam
+•⁠ ⁠Early Stopping to prevent overfitting
 
-pip install tensorflow numpy matplotlib
+📊 Part 3: Model Evaluation & Prediction
 
-▶️ How to Run the Project
-
-Clone or download the project
-
-Open the Python file in Jupyter Notebook or VS Code
-
-Run the script:
-
-python simple_rnn_imdb.py
-
-📊 Training Details
-
-Optimizer: Adam
-
-Loss Function: Binary Crossentropy
-
-Batch Size: 32
-
-Epochs: 15
-
-Early Stopping used to prevent overfitting
-
-Validation Split: 20%
-
-📈 Performance Visualization
-
-The project plots:
+•⁠ ⁠Evaluation on unseen test data
+•⁠ ⁠Visualization of:
 
 Training vs Validation Accuracy
 
 Training vs Validation Loss
+•⁠ ⁠Saving trained model for reuse
+•⁠ ⁠Predicting sentiment for new movie reviews
 
-These plots help identify overfitting or underfitting.
+Prediction Output:
 
-🧪 Model Evaluation
+Positive → Review sentiment is positive
 
-After training:
+Negative → Review sentiment is negative
 
-Model is saved as simple_rnn_imdb.h5
+🛠️ Tech Stack
 
-Loaded again for evaluation
+•⁠ ⁠Programming Language: Python
+•⁠ ⁠Libraries & Frameworks:
 
-Tested on unseen test data
+NumPy
 
-Displays test accuracy and loss
+Matplotlib
 
-🔮 Sample Prediction
+TensorFlow / Keras
+•⁠ ⁠Model Type: Artificial Neural Network (Simple RNN)
+•⁠ ⁠IDE & Tools: VS Code, Jupyter Notebook
+•⁠ ⁠Version Control: Git & GitHub
 
-The model predicts sentiment for a sample movie review:
+📊 Dataset
 
-Output > 0.5 → Positive
+•⁠ ⁠IMDB Movie Review Dataset (Keras Built-in)
+•⁠ ⁠50,000 total reviews
+•⁠ ⁠Binary sentiment labels:
 
-Output ≤ 0.5 → Negative
+1 → Positive Review
 
-Example:
+0 → Negative Review
 
-Predicted Sentiment: Positive
-Actual Label: Positive
+▶️ How to Run the Project
+Step 1: Clone the Repository
+git clone https://github.com/ravikumar-engineer/imdb-sentiment-rnn.git
 
-📁 Saved Model
-simple_rnn_imdb.h5
+Step 2: Install Dependencies
+pip install -r requirements.txt
 
+Step 3: Run the Script
+python imdb_rnn.py
 
-This file contains the trained Simple RNN model and can be reused without retraining.
+📌 Future Enhancements
 
-🚀 Future Improvements
+•⁠ ⁠Replace SimpleRNN with LSTM / GRU for better performance
+•⁠ ⁠Increase vocabulary size
+•⁠ ⁠Add Dropout layers
+•⁠ ⁠Deploy model using Streamlit
+•⁠ ⁠Compare ANN with traditional ML models
 
-Replace SimpleRNN with LSTM or GRU
+👤 Author
 
-Increase vocabulary size
+Ravi Kumar
+Tech Enthusiast | Love Coding in JavaScript & Python |
+Web Developer | Graphic Designer | Data Structures & Algorithms
 
-Add Dropout for better generalization
+⭐ Acknowledgement
 
-Use pre-trained word embeddings (GloVe)
+Thanks to Keras, TensorFlow, and the IMDB open dataset for making this project possible.
 
-🧑‍🎓 Author
+🤝 Connect With Me
 
-Ravi 
-Student – Deep Learning & NLP Enthusiast
+👤 Ravi Kumar
+📞 Contact: +91-9199992833
+🔗 LinkedIn: https://www.linkedin.com/in/ravi-kumar-b82815258
 
-📜 License
-
-This project is for educational purposes only.
+📧 Email: ravi10kumar0803@gmail.com
