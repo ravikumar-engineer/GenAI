@@ -56,7 +56,7 @@ earlystopping = EarlyStopping(
 history = model.fit(
     X_train,
     y_train,
-    epochs=15,
+    epochs=10,
     batch_size=32,
     validation_split=0.2,
     callbacks=[earlystopping]
