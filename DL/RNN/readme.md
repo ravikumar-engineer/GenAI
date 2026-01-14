@@ -128,7 +128,7 @@ Use pre-trained word embeddings (GloVe)
 
 🧑‍🎓 Author
 
-Ravi bhaiya
+Ravi 
 Student – Deep Learning & NLP Enthusiast
 
 📜 License
